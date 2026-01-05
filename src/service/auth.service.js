@@ -19,4 +19,20 @@ async function loginService(email, password) {
     return generateJWT(user.id);
 }
 
-export { generateJWT, loginService };
+async function registerService(username, email, password, avatar) {
+    if (!username || !email || !password) throw new Error("Required fields are empty.");
+
+    const salt = await bcrypt.genSalt(8);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = await userRepository.createUserRepository({
+        username,
+        email,
+        password: hashedPassword,
+        avatar
+    });
+
+    return generateJWT(newUser.id);
+}
+
+export { generateJWT, loginService, registerService };
